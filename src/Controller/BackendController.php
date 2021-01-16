@@ -45,7 +45,7 @@ class BackendController extends CoreController
      * @param $oServiceManager
      * @since 1.0.0
      */
-    public function __construct(AdapterInterface $oDbAdapter, ArticleTable $oTableGateway, $oServiceManager,$aPluginTbls)
+    public function __construct(AdapterInterface $oDbAdapter, $oTableGateway, $oServiceManager,$aPluginTbls)
     {
         $this->oTableGateway = $oTableGateway;
         $this->sSingleForm = 'pos-single';
@@ -81,6 +81,14 @@ class BackendController extends CoreController
         $iJobID = $this->params()->fromRoute('id', 0);
 
         $oJob = false;
+
+        $sMasterUrl = CoreController::$aGlobalSettings['pos-master-url'];
+        $sJSONRaw = file_get_contents($sMasterUrl.'/foodorder/api/view/'.$iJobID);
+        $oJson = json_decode($sJSONRaw);
+
+        if(is_object($oJson->oJob)) {
+            $oJob = $oJson->oJob;
+        }
 
         /**
 

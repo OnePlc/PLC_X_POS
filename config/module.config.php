@@ -25,7 +25,7 @@ return [
             'touchscreen' => [
                 'type'    => Literal::class,
                 'options' => [
-                    'route'    => '/basestation/touchscreen',
+                    'route'    => '/touchscreen',
                     'defaults' => [
                         'controller' => Controller\BackendController::class,
                         'action'     => 'touchscreen',
@@ -62,6 +62,20 @@ return [
                     ],
                     'defaults' => [
                         'controller' => Controller\BackendController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
+            'pos-api' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route' => '/pos/api[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'     => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\ApiController::class,
                         'action'     => 'index',
                     ],
                 ],

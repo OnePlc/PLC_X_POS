@@ -26,6 +26,9 @@ The easiest way to install onePlace POS is via composer
 composer require oneplace/oneplace-pos
 ```
 
+## Requirements
+[escpos-php](https://github.com/mike42/escpos-php)
+
 ## Getting started
 
 how to utilize user manager

@@ -70,10 +70,23 @@ class Module
                 Controller\BackendController::class => function ($container) {
                     $oDbAdapter = $container->get(AdapterInterface::class);
                     $aPluginTbls = [];
+                    $aPluginTbls['user'] = $container->get(\OnePlace\User\Model\UserTable::class);
 
                     return new Controller\BackendController(
                         $oDbAdapter,
-                        $container->get(\OnePlace\Article\Model\ArticleTable::class),
+                        false,
+                        $container,
+                        $aPluginTbls
+                    );
+                },
+                Controller\ApiController::class => function ($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    $aPluginTbls = [];
+                    $aPluginTbls['user'] = $container->get(\OnePlace\User\Model\UserTable::class);
+
+                    return new Controller\ApiController(
+                        $oDbAdapter,
+                        false,
                         $container,
                         $aPluginTbls
                     );

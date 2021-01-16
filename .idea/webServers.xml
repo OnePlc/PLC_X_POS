@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="60342f1d-6d2c-489e-9822-919d5d19664e" name="POS" url="http://kasse01">
+        <fileTransfer host="kasse01" port="22" rootFolder="/var/www/plc/vendor/oneplace/oneplace-pos" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
