@@ -1,3 +1,7 @@
+<?php
+
+use Application\Controller\CoreController;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,13 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="onePlace POS Touchscreen">
-    <meta name="author" content="Nathanael Kammermann">
-    <title>onePlace POS Touchscreen</title>
+    <meta name="author" content="Verein onePlace">
+    <title><?=CoreController::$aGlobalSettings['app-title']?></title>
     <link rel="shortcut icon" href="favicon.ico">
 
     <!-- build:css -->
     <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/vendor/select2/dist/css/select2.min.css">
+    <link rel="stylesheet" href="/vendor/bootstrap4-toggle/css/bootstrap4-toggle.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
           integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
           crossorigin=""/>
@@ -22,13 +27,21 @@
 
 <body style="overflow-x:hidden;">
 
+<div class="row p-2 bg-dark">
+    <div class="col-md-9">
+        <h2 class="text-white"><?=CoreController::$aGlobalSettings['app-title']?></h2>
+    </div>
+    <div class="col-md-3 text-right">
+        <input type="checkbox" checked data-toggle="toggle" data-size="md" data-onstyle="success" data-offstyle="danger" data-on="Geöffnet" data-off="Geschlossen">
+    </div>
+</div>
 <div class="row">
     <div class="col-md-1  p-4">
         <a href="/touchscreen">
             <i class="fas fa-bell fa-2x"></i>
         </a>
         <hr/>
-        <a href="/basestation/cashregister">
+        <a href="/pos/checkout">
             <i class="fas fa-cash-register fa-2x"></i>
         </a>
         <hr/>
@@ -40,7 +53,7 @@
             <i class="fas fa-users fa-2x"></i>
         </a>
         <hr/>
-        <a href="/basestation/worktime">
+        <a href="/pos/worktime">
             <i class="fas fa-user-clock fa-2x"></i>
         </a>
         <hr/>
@@ -58,6 +71,7 @@
 <!-- build:js -->
 <?php
 echo $this->inlineScript()
+    ->prependFile($this->basePath('/vendor/bootstrap4-toggle/js/bootstrap4-toggle.min.js'))
     ->prependFile($this->basePath('/vendor/select2/dist/js/select2.full.min.js'))
     ->prependFile($this->basePath('/vendor/bootstrap/dist/js/bootstrap.min.js'))
     ->prependFile($this->basePath('/vendor/jquery/dist/jquery.min.js'));

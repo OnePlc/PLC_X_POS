@@ -1,0 +1,22 @@
+<?php
+/**
+ * list.phtml - POS Items List
+ **
+ * @category Template
+ * @package POS
+ * @author Verein onePlace
+ * @copyright (C) 2021  Verein onePlace <admin@1plc.ch>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
+if(count($aList) > 0) {
+    foreach($aList as $oItem) { ?>
+        <li class="list-group-item">
+            <?=$oItem->amount?>x <?=$oItem->label?> - CHF <?=number_format(($oItem->amount*$oItem->price),2,'.','\'')?>
+        </li>
+<?php
+    }
+}
+?>

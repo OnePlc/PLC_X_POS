@@ -32,16 +32,6 @@ return [
                     ],
                 ],
             ],
-            'backend-worktime' => [
-                'type'    => Literal::class,
-                'options' => [
-                    'route'    => '/basestation/worktime',
-                    'defaults' => [
-                        'controller' => Controller\BackendController::class,
-                        'action'     => 'worktime',
-                    ],
-                ],
-            ],
             'backend-cashregister' => [
                 'type'    => Literal::class,
                 'options' => [
@@ -76,6 +66,34 @@ return [
                     ],
                     'defaults' => [
                         'controller' => Controller\ApiController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
+            'pos-worktime' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route' => '/pos/worktime[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'     => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\WorktimeController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
+            'pos-checkout' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route' => '/pos/checkout[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id'     => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\CheckoutController::class,
                         'action'     => 'index',
                     ],
                 ],

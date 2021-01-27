@@ -1,0 +1,65 @@
+<?php
+/**
+ * saldo.phtml - Employee Monthly Worktime Saldo
+ **
+ * @category Template
+ * @package POS
+ * @author Verein onePlace
+ * @copyright (C) 2021  Verein onePlace <admin@1plc.ch>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
+setlocale(LC_ALL, 'de_DE');
+
+$this->InlineScript()
+    ->appendFile($this->basePath() . '/pos/js/worktime-saldo.js');
+?>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h1>Saldo für Mitarbeiter</h1>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <select class="form-control" name="month">
+                        <?php
+                        for($i = 1;$i <= 12;$i++) {
+                            $sDate = date('Y',time()).'-'.$i.'-01';
+                            ?>
+                            <option value="<?=$i?>">
+                                <?=strftime('%B',strtotime($sDate))?>
+                            </option>
+                            <?php
+                        }
+                        ?>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <select class="form-control" name="employee">
+                            <option value="0">-- Bitte Mitarbeiter auswählen --</option>
+                            <?php
+                            if(count($aEmployees) > 0) {
+                                foreach($aEmployees as $oEmp) { ?>
+                                    <option value="<?=$oEmp->id?>">
+                                        <?=$oEmp->label?>
+                                    </option>
+                                    <?php
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body worktime-list">
+                <div class="alert alert-info p-4">
+                    Bitte Monat und Mitarbeiter auswählen
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

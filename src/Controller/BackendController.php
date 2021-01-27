@@ -84,105 +84,60 @@ class BackendController extends CoreController
 
         $sMasterUrl = CoreController::$aGlobalSettings['pos-master-url'];
         $sJSONRaw = file_get_contents($sMasterUrl.'/foodorder/api/view/'.$iJobID);
-        $oJson = json_decode($sJSONRaw);
+        try {
+            $oJson = json_decode($sJSONRaw);
+        } catch(\TypeError $e) {
+            var_dump($sJSONRaw);
+            return false;
+        }
 
         if(is_object($oJson->oJob)) {
             $oJob = $oJson->oJob;
         }
-
-        /**
-
-        $oJob = $this->aPluginTbls['job']->getSingle($iJobID);
-        $aPositions = [];
-        $oPositionsDB = $this->aPluginTbls['job-position']->fetchAll(false, ['job_idfs' => $iJobID]);
-        if(count($oPositionsDB) > 0) {
-            foreach($oPositionsDB as $oPos) {
-                $oPos->oArticle = $this->oTableGateway->getSingle($oPos->article_idfs);
-                $aPositions[] = $oPos;
-            }
-        }
-        $oJob->aPositions = $aPositions;
-         *
-         * **/
 
         return new ViewModel([
             'oJob' => $oJob,
         ]);
     }
 
-    public function confirmAction(){
-        $oRequest = $this->getRequest();
-
-        if($oRequest->isPost()) {
-            /**
-            $iJobID = $oRequest->getPost('job_id');
-            $sTimeVal = (int)$oRequest->getPost('deliverytime_est')*60;
-
-            $this->aPluginTbls['job']->updateAttribute('state_idfs', 17, 'Job_ID', $iJobID);
-            $this->aPluginTbls['job']->updateAttribute('deliverytime_est', date('Y-m-d H:i:s', time()+$sTimeVal), 'Job_ID', $iJobID);
-
-             * **/
-            return $this->redirect()->toRoute('touchscreen', []);
-        }
-    }
-
-    public function touchscreenAction() {
-        # Set layout
-        $this->layout('layout/touchscreen');
-
-        if(!isset(CoreController::$oSession->oUser)) {
-            $sUser = 'admin@1plc.ch';
-            $oUser = $this->aPluginTbls['user']->getSingle($sUser, 'email');
-            CoreController::$oSession->oUser = $oUser;
-        }
-
-        return new ViewModel([]);
-    }
-
-    public function worktimeAction() {
-        # Set layout
-        $this->layout('layout/touchscreen');
-
-        if(!isset(CoreController::$oSession->oUser)) {
-            $sUser = 'admin@1plc.ch';
-            $oUser = $this->aPluginTbls['user']->getSingle($sUser, 'email');
-            CoreController::$oSession->oUser = $oUser;
-        }
-
-        $aCurrentTimes = [];
-        /**
-        $oWtTbl = new TableGateway('worktime', CoreController::$oDbAdapter);
-        $aCurrentTimes = $oWtTbl->select();
-         * **/
-
-        return new ViewModel([
-            'aCurrentTimes' => $aCurrentTimes,
-        ]);
-    }
-
-    public function cashregisterAction()
+    /**
+     * Touchscreen Index
+     *
+     * @return ViewModel
+     */
+    public function touchscreenAction()
     {
         # Set layout
         $this->layout('layout/touchscreen');
 
         if(!isset(CoreController::$oSession->oUser)) {
-            $sUser = 'admin@1plc.ch';
-            $oUser = $this->aPluginTbls['user']->getSingle($sUser, 'email');
-            CoreController::$oSession->oUser = $oUser;
+            $this->posLogin();
         }
 
-        $aArticles = [];
-        /**
-        $oArticlesDB = $this->aPluginTbls['article']->fetchAll(false, []);
-        $aArticles = [];
-        if(count($oArticlesDB) > 0) {
-            foreach($oArticlesDB as $oArt) {
-                $aArticles[] = $oArt;
-            }
-        } **/
+        return new ViewModel([]);
+    }
 
-        return new ViewModel([
-            'aArticles' => $aArticles,
-        ]);
+    private function posLogin() {
+        $sUser = CoreController::$aGlobalSettings['pos-login'];
+        $oUser = $this->aPluginTbls['user']->getSingle($sUser, 'email');
+        CoreController::$oSession->oUser = $oUser;
+    }
+
+    /**
+     * Touch Cash Register
+     *
+     * @return Redirect
+     */
+    public function ontheroadAction()
+    {
+        # Set layout
+        $this->layout('layout/json');
+
+        $iJobID = $this->params()->fromRoute('id', 0);
+
+        $sMasterUrl = CoreController::$aGlobalSettings['pos-master-url'];
+        $sJSONRaw = file_get_contents($sMasterUrl.'/foodorder/api/deliveryajax/'.$iJobID);
+
+        return $this->redirect()->toRoute('touchscreen');
     }
 }

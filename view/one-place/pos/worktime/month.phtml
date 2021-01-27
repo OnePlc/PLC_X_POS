@@ -1,0 +1,46 @@
+<?php
+/**
+ * month.phtml - Employee Monthly Worktime List
+ **
+ * @category Template
+ * @package POS
+ * @author Verein onePlace
+ * @copyright (C) 2021  Verein onePlace <admin@1plc.ch>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
+$aItems = [];
+$fTotalTime = 0;
+if(count($aCurrentTimes) > 0) {
+    foreach ($aCurrentTimes as $oItem) {
+        $sTimestamp1 = strtotime($oItem->time_start);
+        $sTimestamp2 = strtotime($oItem->time_end);
+        $fHour = abs($sTimestamp2 - $sTimestamp1) / (60 * 60);
+        $fTotalTime += $fHour;
+
+        $aItems[] = date('d.m.Y H:i',strtotime($oItem->time_start)).' - '.date('H:i',strtotime($oItem->time_end)).' - '.$oItem->created_by->label;
+    }
+}
+?>
+<h2>Total Arbeitszeit <?=$sMonth?> : <?=number_format($fTotalTime,2)?>h</h2>
+<ul class="list-group">
+    <?php
+    if(count($aItems) > 0) {
+        foreach($aItems as $sItem) { ?>
+            <li class="list-group-item">
+                <?=$sItem?>
+            </li>
+            <?php
+        }
+    } else { ?>
+        <li class="list-group-item">
+            <div class="alert alert-info p-4">
+                Bisher keine Einträge
+            </div>
+        </li>
+        <?php
+    }
+    ?>
+</ul>

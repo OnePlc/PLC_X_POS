@@ -1,0 +1,27 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Praesidiarius
+ * Date: 27.01.2021
+ * Time: 15:13
+ */
+?>
+<ul class="list-group">
+    <?php
+    if(count($aCurrentTimes) > 0) {
+        foreach($aCurrentTimes as $oItem) { ?>
+            <li class="list-group-item">
+                <?=date('d.m.Y H:i',strtotime($oItem->time_start)).' - '.date('H:i',strtotime($oItem->time_end)).' - '.$oItem->created_by->label?>
+            </li>
+            <?php
+        }
+    } else { ?>
+        <li class="list-group-item">
+            <div class="alert alert-info p-4">
+                Bisher keine Einträge
+            </div>
+        </li>
+        <?php
+    }
+    ?>
+</ul>

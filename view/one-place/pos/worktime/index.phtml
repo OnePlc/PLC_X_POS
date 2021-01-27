@@ -1,0 +1,42 @@
+<?php
+/**
+ * worktime.phtml - Worktime Dashboard for POS
+ *
+ * An POS Interface for the Worktime Module with very basic funtions
+ *
+ * @category Template
+ * @package POS
+ * @author Verein onePlace
+ * @copyright (C) 2021  Verein onePlace <admin@1plc.ch>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0.0
+ * @since 1.0.0
+ */
+
+$this->InlineScript()
+    ->appendFile($this->basePath() . '/pos/js/worktime.js');
+?>
+
+<div class="row">
+    <div class="col-md-9">
+        <h1>Arbeiszeit</h1>
+    </div>
+    <div class="col-md-3 text-right">
+        <a href="/pos/worktime/saldo" class="btn btn-primary">
+            <i class="fas fa-list"> </i> Monats Saldo
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Neueste Einträge</h2>
+            </div>
+            <div class="card-body current-worktime-widget">
+                Einträge werden geladen
+            </div>
+        </div>
+    </div>
+</div>
+

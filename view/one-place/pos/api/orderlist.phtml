@@ -15,7 +15,7 @@
         <script>
             function play() {
                 var audio = new Audio(
-                    'https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
+                    '//kasse01/pos/audio/alarm.mp3');
                 audio.play();
             }
             play();
@@ -51,9 +51,18 @@
             if(count($aCurrentJobsDelivery) > 0) {
                 foreach($aCurrentJobsDelivery as $oJob) { ?>
                     <li class="list-group-item">
-                        <a href="/pos/backend/view/<?=$oJob->id?>">
-                            <h3><?=$oJob->label?></h3>
-                        </a>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <a href="/pos/backend/view/<?=$oJob->id?>">
+                                    <h3><?=$oJob->label?></h3>
+                                </a>
+                            </div>
+                            <div class="col-md-3 text-right">
+                                <a href="/pos/backend/ontheroad/<?=$oJob->id?>" class="btn btn-secondary">
+                                    <i class="fas fa-truck"></i> Unterwegs
+                                </a>
+                            </div>
+                        </div>
                     </li>
                     <?php
                 }

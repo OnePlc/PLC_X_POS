@@ -1,10 +1,20 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Praesidiarius
- * Date: 11.01.2021
- * Time: 19:33
+ * view.phtml - View Order
+ *
+ * Shows Order with all its details and some widgets like a map
+ *
+ * @category Template
+ * @package POS
+ * @author Verein onePlace
+ * @copyright (C) 2021  Verein onePlace <admin@1plc.ch>
+ * @license https://opensource.org/licenses/BSD-3-Clause
+ * @version 1.0.0
+ * @since 1.0.0
  */
+
+$this->InlineScript()
+    ->appendFile($this->basePath() . '/pos/js/tracking.js');
 ?>
 
 <div class="card">
@@ -13,7 +23,7 @@
             <div class="col-md-8">
                 <h2><?=$oJob->label?></h2>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 text-right">
                 <?php if($oJob->state_idfs == 15) { ?>
                 <form action="/pos/api/confirm" method="POST">
                     <input type="hidden" name="job_id" value="<?=$oJob->id?>" />
@@ -35,6 +45,8 @@
                     ?>
                     <a href="/pos/api/print/<?=$oJob->id?>" class="btn btn-primary"><i class="fas fa-print"></i> Drucken</a>
                 <?php } ?>
+
+                <a href="/touchscreen" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Zurück</a>
             </div>
         </div>
     </div>
@@ -42,21 +54,62 @@
         <h2>Bestellung</h2>
         <ul class="list-group">
         <?php
+        $fSubtotal = 0;
+
         if(count($oJob->aPositions) > 0) {
-            foreach($oJob->aPositions as $oPos) { ?>
+            foreach($oJob->aPositions as $oPos) {
+                $fSubtotal+=($oPos->amount*$oPos->price);
+                ?>
             <li class="list-group-item">
-                <?=$oPos->amount?>x <?=$oPos->oArticle->label?>
+                <div class="row">
+                    <div class="col-md-8">
+                        <?=$oPos->amount?>x <?=$oPos->oArticle->oCategory->label?> <?=$oPos->oArticle->label?>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        CHF <?=number_format(($oPos->amount*$oPos->price),2,'.','\'')?>
+                    </div>
+                </div>
             </li>
             <?php
             }
         }
         ?>
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-md-8">
+                        <b>Total</b>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <b>CHF <?=number_format($fSubtotal,2,'.','\'')?></b>
+                    </div>
+                </div>
+            </li>
         </ul>
     </div>
     <div class="card-body">
-        <h2>Lieferung</h2>
-        Nathanael Kammermann
-        Sackstrass 34
-        8460 Marthalen
+        <div class="row py-4">
+            <div class="col-md-4">
+                <h2>Lieferung</h2>
+                <?=$oJob->oContact->firstname.' '.$oJob->oContact->lastname?><br/>
+                <?=$oJob->oContact->oAddress->street.' '.$oJob->oContact->oAddress->appartment?><br/>
+                <?=$oJob->oContact->oAddress->zip.' '.$oJob->oContact->oAddress->city?><br/>
+            </div>
+            <div class="col-md-8">
+                <div id="mapid"></div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+<style>
+    #mapid { height: 250px; }
+
+    .leaflet-routing-container {
+        display: none;
+    }
+</style>
+
+<script>
+    window.order_location = '<?=$oJob->oContact->oAddress->street?> <?=$oJob->oContact->oAddress->appartment?>,<?=$oJob->oContact->oAddress->zip?> <?=$oJob->oContact->oAddress->city?>';
+</script>

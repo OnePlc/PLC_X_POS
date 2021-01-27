@@ -82,9 +82,13 @@ class ApiController extends CoreController
         }
         if(is_array($oJson->aCurrentJobs)) {
            $aCurrentJobs = $oJson->aCurrentJobs;
-        }
-        if(isset($oJson->$bNewOrders)) {
-           $bNewOrders = $oJson->bNewOrders;
+           if(!isset(CoreController::$oSession->iOrderCount)) {
+               CoreController::$oSession->iOrderCount = count($aCurrentJobs);
+           }
+           if(CoreController::$oSession->iOrderCount < count($aCurrentJobs)) {
+               $bNewOrders = true;
+           }
+           CoreController::$oSession->iOrderCount = count($aCurrentJobs);
         }
 
         return new ViewModel([
@@ -94,17 +98,27 @@ class ApiController extends CoreController
         ]);
     }
 
-    private function ReceiptTitle(\Mike42\Escpos\Printer $printer, $str) {
-        $printer -> selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
-        $printer -> text($str);
-        $printer -> selectPrintMode();
+    /**
+     * Title Settings for Receipt Printer
+     */
+    private function ReceiptTitle(\Mike42\Escpos\Printer $oPrinter, $str)
+    {
+        $oPrinter -> selectPrintMode(Printer::MODE_DOUBLE_HEIGHT | Printer::MODE_DOUBLE_WIDTH);
+        $oPrinter -> text($str);
+        $oPrinter -> selectPrintMode();
     }
 
-    public function printAction() {
+    /**
+     * Print Receipt for Order
+     *
+     * @return mixed
+     */
+    public function printAction()
+    {
         $this->layout('layout/json');
 
-        $connector = new FilePrintConnector("/dev/usb/lp0");
-        $printer = new Printer($connector);
+        $oConnector = new FilePrintConnector("/dev/usb/lp0");
+        $oPrinter = new Printer($oConnector);
 
         $iJobID = $this->params()->fromRoute('id', 0);
         $sMasterUrl = CoreController::$aGlobalSettings['pos-master-url'];
@@ -117,35 +131,74 @@ class ApiController extends CoreController
         }
 
         if($oJob) {
+
             $sQRData = 'https://annas.1plc.ch/foodorder/api/delivery/'.$oJob->id;
 
             # Center
-            $printer -> setJustification(Printer::JUSTIFY_CENTER);
+            $oPrinter -> setJustification(Printer::JUSTIFY_CENTER);
 
             # Image
             $img = EscposImage::load($_SERVER['DOCUMENT_ROOT'].'/../vendor/oneplace/oneplace-pos/public/img/logo.png'); // Load image
-            $printer -> bitImage($img);
-            $printer -> feed();
+            $oPrinter -> bitImage($img);
+            $oPrinter -> feed();
 
-            $printer -> setEmphasis(true);
-            $printer -> text($oJob->label."\n");
-            $printer -> setEmphasis(false);
-            $printer -> feed();
+            $oPrinter -> setEmphasis(true);
+            $oPrinter -> text($oJob->label."\n");
+            $oPrinter -> setEmphasis(false);
+            $oPrinter -> feed();
+
+             $oPrinter -> setJustification(Printer::JUSTIFY_LEFT);
+             $oPrinter -> setEmphasis(false);
+            $rightCols = 10;
+            $leftCols = 38;
+            //return "$left$right\n";
+
+            $left = str_pad('', $leftCols) ;
+            $right = str_pad('CHF', $rightCols, ' ', STR_PAD_LEFT);
+            $oPrinter -> text("$left$right\n");
+            $oPrinter -> feed();
+            $fSubtotal = 0;
             if(count($oJob->aPositions) > 0) {
                 foreach($oJob->aPositions as $oPos) {
-                    $printer -> text($oPos->amount.'x '.$oPos->oArticle->label."\n");
-                    $printer -> feed();
+                    $fSubtotal+=($oPos->amount*$oPos->price);
+                    $left = str_pad($oPos->amount.'x '.$oPos->oArticle->oCategory->label.' '.$oPos->oArticle->label, $leftCols) ;
+                    $right = str_pad(number_format(($oPos->amount*$oPos->price),2,'.','\''), $rightCols, ' ', STR_PAD_LEFT);
+                    $oPrinter -> text("$left$right\n");
+                    $oPrinter -> feed();
                 }
             }
-            $printer -> feed();
+
+            $rightCols = 14;
+            $leftCols = 10;
+
+            /**
+             * Total
+             */
+            $oPrinter->setTextSize(2,2);
+            $left = str_pad('Total', $leftCols) ;
+            $right = str_pad(number_format($fSubtotal,2,'.','\''), $rightCols, ' ', STR_PAD_LEFT);
+            $oPrinter -> text("$left$right\n");
+            $oPrinter -> feed();
+
 
             # Delivery QR
-            $printer -> qrCode($sQRData, Printer::QR_ECLEVEL_L, 5);
-            $printer -> setJustification();
-            $printer -> feed();
+            $sName = $oJob->oContact->firstname.' '.$oJob->oContact->lastname;
+            $sAddr = $oJob->oContact->oAddress->street.' '.$oJob->oContact->oAddress->appartment;
+            $sCity = $oJob->oContact->oAddress->zip.' '.$oJob->oContact->oAddress->city;
 
-            $printer -> cut();
-            $printer -> close();
+            $oPrinter -> setJustification(Printer::JUSTIFY_LEFT);
+            $oPrinter->setTextSize(1,1);
+
+            $left = str_pad("$sName\n$sAddr\n$sCity\n", $leftCols) ;
+            $oPrinter -> text("$left\n");
+
+            $oPrinter -> setJustification(Printer::JUSTIFY_LEFT);
+            $oPrinter -> qrCode($sQRData, Printer::QR_ECLEVEL_L, 5);
+            $oPrinter -> setJustification();
+            $oPrinter -> feed();
+
+            $oPrinter -> cut();
+            $oPrinter -> close();
         }
 
         return $this->redirect()->toRoute('touchscreen');

@@ -91,6 +91,30 @@ class Module
                         $aPluginTbls
                     );
                 },
+                Controller\WorktimeController::class => function ($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    $aPluginTbls = [];
+                    $aPluginTbls['user'] = $container->get(\OnePlace\User\Model\UserTable::class);
+
+                    return new Controller\WorktimeController(
+                        $oDbAdapter,
+                        false,
+                        $container,
+                        $aPluginTbls
+                    );
+                },
+                Controller\CheckoutController::class => function ($container) {
+                    $oDbAdapter = $container->get(AdapterInterface::class);
+                    $aPluginTbls = [];
+                    $aPluginTbls['user'] = $container->get(\OnePlace\User\Model\UserTable::class);
+
+                    return new Controller\CheckoutController(
+                        $oDbAdapter,
+                        false,
+                        $container,
+                        $aPluginTbls
+                    );
+                },
             ],
         ];
     }

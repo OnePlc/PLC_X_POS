@@ -24,6 +24,8 @@ It expands on [oneplace-core](https://github.com/OnePlc/PLC_X_Core) and uses the
 The easiest way to install onePlace POS is via composer
 ```shell script
 composer require oneplace/oneplace-pos
+
+./node_modules/yarn/bin/yarn add bootstrap4-toggle
 ```
 
 ## Requirements
