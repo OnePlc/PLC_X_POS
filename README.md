@@ -7,12 +7,14 @@
 
 This is the POS Module for onePlace Software Framework based on Laminas Project (former Zend Framework)
 
-Create your web based apps on the fly! onePlace brings you extended Entity and Table Models,
-View Helpers and much more - so you can build your Webapp to manage database based data, 
-in almost any layout you can image. 
+Create your own Point of Sale - based on onePlace ! 
 
-onePlace is built for maximum freedom of choice for your app, and so only small
-parts of laminas mvc are utilized. a lot is done from scratch to give you more freedom / customization.
+This Module is for a local oneplace installation on the POS itself.
+
+We use Raspberry Pi 3 Model B with Touchscreen as a Hardware Basis
+
+Needs a second onePlace Installation (Server) to communicate with - normally,
+thats the online store.
 
 ## POS Module
 
